@@ -8,25 +8,37 @@ export default class App extends Component{
 		super();
 	}
 	componentDidMount(){
-		this.game = new Phaser.Game(800,600,Phaser.AUTO,'container',{preload:this.preload,create:this.create,update:this.update});
+		this.game = new Phaser.Game(800,600,Phaser.AUTO,'',{preload:this.gamePreload.bind(this),create:this.gameCreate.bind(this),update:this.gameUpdate.bind(this),render:this.gameRender.bind(this)},true);
 	}
-	preload(){
-		this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-		this.scale.pageAlignVertically=true;
-		this.scale.pageAlignHorizontally=true;
-		//this.scale.setScreenSize = true;
+	gamePreload(){
+		//scale game screen
+		this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+		this.game.scale.pageAlignVertically=true;
+		this.game.scale.pageAlignHorizontally=true;
+		this.game.scale.setScreenSize = true;
+		//call children method
+		this.refs.childPage.gamePreload(this.game);
+
 	}
-	create(){
+	gameCreate(){
+		this.refs.childPage.gameCreate(this.game);
 	}
-	update(){
+	gameUpdate(){
+		this.refs.childPage.gameUpdate(this.game);
+	}
+	gameRender(){
+		this.refs.childPage.gameRender(this.game);
 	}
 
 	render(){
+		const childrenWithProps = React.Children.map(this.props.children,
+				(child) => React.cloneElement(child,{
+					ref:'childPage'
+				})
+			);
 		return(
-			<div id='container'>
-				<div id='overlay'>
-					{this.props.children}
-				</div>
+			<div id='overlay'>
+				{childrenWithProps}
 			</div>
 		);
 	}
