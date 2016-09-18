@@ -9,39 +9,44 @@ export default class LoadingPage extends Component{
 			progress:0
 		}
 	}
-	gamePreload(game){
-
-		game.load.onLoadStart.add(this.loadStart,this)
-		game.load.onFileComplete.add(this.fileComplete,this)
-		game.load.onLoadComplete.add(this.loadComplete,this)
-
-		game.load.image('9','sprites/9.png');
-		game.load.image('10','sprites/10.png');
-		game.load.image('A','sprites/A.png');
-		game.load.image('J','sprites/J.png');
-		game.load.image('K','sprites/K.png');
-		game.load.image('Q','sprites/Q.png');
-		game.load.image('Odo','sprites/Odo.png');
-		game.load.image('SeaHorse','sprites/SeaHorse.png');
-		game.load.image('Shark','sprites/Shark.png');
-		game.load.image('Shell','sprites/Shell.png');
-		game.load.image('StarFish','sprites/StarFish.png');
-		game.load.image('Turtle','sprites/Turtle.png');
-		game.load.image('Whale','sprites/Whale.png');
-
-		game.load.audio('bgmusic',['sounds/loading.mp3','sounds/loading.ogg']);
-
-		game.load.start();
-
+	componentWillMount(){
 	}
-	gameCreate(game){
+	componentDidMount(){
 	}
-	gameUpdate(game){
+	gamePreload(){
+		let load = this.props.game.load;
+		load.onLoadStart.add(this.loadStart,this)
+		load.onFileComplete.add(this.fileComplete,this)
+		load.onLoadComplete.add(this.loadComplete,this)
+
+		load.image('9','sprites/9.png');
+		load.image('10','sprites/10.png');
+		load.image('A','sprites/A.png');
+		load.image('J','sprites/J.png');
+		load.image('K','sprites/K.png');
+		load.image('Q','sprites/Q.png');
+		load.image('Odo','sprites/Odo.png');
+		load.image('SeaHorse','sprites/SeaHorse.png');
+		load.image('Shark','sprites/Shark.png');
+		load.image('Shell','sprites/Shell.png');
+		load.image('StarFish','sprites/StarFish.png');
+		load.image('Turtle','sprites/Turtle.png');
+		load.image('Whale','sprites/Whale.png');
+
+		load.image('spinner-bg','images/spinner-bg.png');
+		load.audio('bg-music',['sounds/loading.mp3','sounds/loading.ogg']);
+		load.audio('spin-music',['sounds/spin.mp3','sounds/spin.ogg']);
+		load.audio('spin-stop-music',['sounds/spin-stop.mp3','sounds/spin-stop.ogg']);
+
+		load.start();
 	}
-	gameRender(game){
+	gameCreate(){
+	}
+	gameUpdate(){
+	}
+	gameRender(){
 	}
 	loadStart(){
-		console.log('starting');
 	}
 	fileComplete(progress,cacheKey,success,totalLoaded,totalFiles){
 		this.setState({progress:progress});
@@ -49,7 +54,6 @@ export default class LoadingPage extends Component{
 	loadComplete(){
 		browserHistory.push('/game');
 	}
-	
 	render(){
 		let progressStyle = {width:this.state.progress+'%'}
 		return(
