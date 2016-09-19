@@ -13,7 +13,7 @@ export default class Sidebar extends Component{
 		{
 			this.state.lines[i]=false;
 		}
-		
+		this.animIndex = 0;
 	}
 	componentDidMount(){
 		this.game = this.props.game;
@@ -38,6 +38,9 @@ export default class Sidebar extends Component{
 		this.startShowTime = this.game.time.totalElapsedSeconds();
 	}
 	create(){
+		this.animatedGroup = this.game.add.group();
+		this.animatedGroup.x = 67;
+		this.animatedGroup.y = 67;
 		//variable to keep track of delay till lines hide themselves
 		this.startShowTime = this.game.time.totalElapsedSeconds();
 
@@ -62,6 +65,7 @@ export default class Sidebar extends Component{
 		}
 	}
 	updateLines(){
+		//hide lines in 3 seconds
 		var deltaTime =3;
 		if(this.game.time.totalElapsedSeconds()-this.startShowTime > deltaTime){
 			this.group.visible = false;
@@ -69,9 +73,65 @@ export default class Sidebar extends Component{
 		else {
 			this.group.visible = true;
 		}
+		//update animated group
+		if(this.game.time.totalElapsedSeconds()-this.startAnimTime > 0.5){
+			if(this.animatedGroup.length){
+				var graphics = this.animatedGroup.getAt(this.animIndex);
+				graphics.y = 0;
+			}
+		}
+		if(this.game.time.totalElapsedSeconds()-this.startAnimTime > 1){
+			if(this.animatedGroup.length){
+				var graphics = this.animatedGroup.getAt(this.animIndex);
+				graphics.y = -1000;
+			}
+			this.startAnimTime = this.game.time.totalElapsedSeconds();
+			this.animIndex ++;
+			if(this.animIndex>=this.animatedGroup.length){
+				this.animIndex = 0;
+			}
+		}
 	}
 	update(){
 		this.updateLines();
+	}
+	animateWin(lines){
+		//lines = [[5,3]]; //line, size
+		var cof = 400/27;
+
+		this.animatedGroup.removeAll(true);
+		for(var i=0;i<lines.length;i++){
+			var index = lines[i][0];
+			var len = lines[i][1];
+			var path = this.state.linePath[index];
+			var graphics = this.game.add.graphics(0,0);
+			graphics.y = -1000;
+
+			this.animatedGroup.add(graphics);
+			graphics.lineStyle(10,0xff3333,0.7);
+			graphics.moveTo(0,path[0]*cof);
+			graphics.lineTo(4*cof,path[0]*cof);
+
+			var rectX=0,rectY=0;
+			rectY = Math.floor(path[0]/9);
+			graphics.drawRect(rectX*cof*9,rectY*cof*9,cof*9,cof*9);
+			graphics.moveTo(4*cof,path[0]*cof);
+
+			for(var j = 1;j<=4;j++){
+				graphics.lineTo((4+j*9)*cof,path[j]*cof);
+				if(j<len){
+					rectX = j;
+					rectY = Math.floor(path[j]/9);
+					graphics.drawRect(rectX*cof*9,rectY*cof*9,cof*9,cof*9);
+					graphics.moveTo((4+j*9)*cof,path[j]*cof);
+				}
+			}
+			graphics.lineTo(45*cof,path[4]*cof)
+		}
+		if(lines.length)
+			this.animIndex = 0;
+
+		this.startAnimTime = this.game.time.totalElapsedSeconds();	
 	}
 	render(){
 		let style={width:this.gamePixeltoDOM(67)};

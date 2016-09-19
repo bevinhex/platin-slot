@@ -161,6 +161,7 @@ export default class Controller{
 				'balance':this.balance
 			});
 		}
+		this.sidebar.animateWin([]);
 		this.spinMusic.loopFull(1);
 		this.spinner[0].Start();
 		this.spinner[0].SetFriction(0.98);
@@ -232,26 +233,32 @@ export default class Controller{
 		this.result[index] = result;	
 	}
 	applyRules(){
+		var winLine = [];
 		var win=0;
 		for(var i=1;i<=25;i++){
-			win += this.lineWin(i);
+			var tmp = this.lineWin(i);
+			if(tmp[0]>0){
+				winLine.push([i,tmp[1]])
+			}
+			win += tmp[0];
 		}
 		this.win = win*this.bet;
 		this.balance += this.win;
 		this.footer.setState({
 			balance:this.balance,
 			win:this.win});
+	
+		this.sidebar.animateWin(winLine);
 	}
 	lineWin(lineNumber){
 		if(this.lines[lineNumber] == false){
 			return 0;
 		}
 		var result = this.getLineResult(lineNumber);
-		console.log(result);
 		var filteredRes = this.filterResult(result);
 		console.log(filteredRes);
 		var win = this.checkProfiles(filteredRes);
-		return win;
+		return [win,filteredRes.length];
 	}
 	getLineResult(lineNumber){
 		var path = this.linePath()[lineNumber];
